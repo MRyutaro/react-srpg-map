@@ -1,6 +1,24 @@
+import { useState } from "react";
 import { SrpgMap } from "./components/SrpgMap";
+import { Tile } from "./components/SrpgMap";
+
+const defaultTiles: { [key: string]: Tile } = {
+    "0,0": { backgroundColor: "red", children: <div>0,0</div> },
+    "1,1": { backgroundColor: "blue" },
+    "2,2": { backgroundColor: "green" },
+};
 
 export default function App() {
+    const [tiles, setTiles] = useState<{ [key: string]: Tile }>({});
+
+    const updateTile = (x: number, y: number) => {
+        // タイルの更新処理
+        setTiles((prev) => ({
+            ...prev,
+            [`${x},${y}`]: { ...prev[`${x},${y}`], backgroundColor: "red" },
+        }));
+    };
+
     return (
         <div
             style={{
@@ -8,7 +26,7 @@ export default function App() {
                 width: "100vw",
             }}
         >
-            <SrpgMap />
+            <SrpgMap defaultTiles={defaultTiles} updateTile={updateTile} tiles={tiles} setTiles={setTiles} />
         </div>
     );
 }

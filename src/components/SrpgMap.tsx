@@ -1,24 +1,31 @@
 import { useState, useEffect } from "react";
 
-interface Tile {
+export interface Tile {
     children?: React.ReactNode;
     backgroundColor?: string;
 }
 
-interface MapProps {
+export interface MapProps {
     viewRows?: number;
     viewCols?: number;
     tileSize?: number;
     rotateX?: number;
     rotateZ?: number;
+    defaultTiles?: { [key: string]: Tile };
     updateTile?: (x: number, y: number) => void;
+    tiles?: { [key: string]: Tile };
+    setTiles?: React.Dispatch<React.SetStateAction<{ [key: string]: Tile }>>;
 }
 
-export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60, rotateZ = 45, updateTile }: MapProps): JSX.Element {
+export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60, rotateZ = 45, defaultTiles, updateTile, tiles, setTiles }: MapProps) {
     const [viewport, setViewport] = useState({ startX: 0, startY: 0 });
     const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
-    const [tiles, setTiles] = useState<{ [key: string]: Tile }>({});
+    const [localTiles, setLocalTiles] = useState<{ [key: string]: Tile }>({});
 
+    const _tiles = tiles || localTiles;
+    const _setTiles = setTiles || setLocalTiles;
+
+    // タイルの初期化
     useEffect(() => {
         const initialTiles: { [key: string]: Tile } = {};
         for (let x = 0; x < viewRows; x++) {
@@ -26,11 +33,24 @@ export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX 
                 initialTiles[`${x},${y}`] = {};
             }
         }
-        setTiles(initialTiles);
+        _setTiles(initialTiles);
     }, []);
 
+    // デフォルトタイルの設定
     useEffect(() => {
-        setTiles((prev) => {
+        _setTiles((prev) => {
+            const updatedTiles = { ...prev };
+            for (const key in defaultTiles) {
+                const [x, y] = key.split(",").map(Number);
+                updatedTiles[`${x},${y}`] = defaultTiles[key];
+            }
+            return updatedTiles;
+        });
+    }, [defaultTiles]);
+
+    // タイルが更新されたときに呼ばれる
+    useEffect(() => {
+        _setTiles((prev) => {
             const updatedTiles = { ...prev };
             for (let x = viewport.startX; x < viewport.startX + viewRows; x++) {
                 for (let y = viewport.startY; y < viewport.startY + viewCols; y++) {
@@ -47,7 +67,7 @@ export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX 
         if (updateTile) {
             updateTile(x, y);
         } else {
-            setTiles((prev) => ({
+            _setTiles((prev) => ({
                 ...prev,
                 [`${x},${y}`]: { ...prev[`${x},${y}`], backgroundColor: "red" },
             }));
@@ -72,15 +92,6 @@ export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX 
             }
 
             return { startX: newStartX, startY: newStartY };
-        });
-    };
-
-    const moveCurrentPosition = (dx: number, dy: number) => {
-        setCurrentPosition((prev) => {
-            const newX = prev.x + dx;
-            const newY = prev.y + dy;
-            adjustViewport(newX, newY);
-            return { x: newX, y: newY };
         });
     };
 
@@ -143,7 +154,7 @@ export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX 
                     Array.from({ length: viewCols }).map((_, colIndex) => {
                         const x = viewport.startX + rowIndex;
                         const y = viewport.startY + colIndex;
-                        const tile = tiles[`${x},${y}`];
+                        const tile = _tiles[`${x},${y}`];
                         const isCurrentPosition = x === currentPosition.x && y === currentPosition.y;
 
                         return (
