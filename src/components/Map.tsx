@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import logo from "./logo.svg";
 
 interface Tile {
     children?: React.ReactNode;
@@ -10,13 +9,15 @@ interface MapProps {
     viewRows?: number;
     viewCols?: number;
     tileSize?: number;
+    rotateX?: number;
+    rotateZ?: number;
     updateTile?: (x: number, y: number) => void;
 }
 
-const INITIAL_X_LENGTH = 100;
-const INITIAL_Y_LENGTH = 100;
+const INITIAL_X_LENGTH = 20;
+const INITIAL_Y_LENGTH = 20;
 
-export function Map({ viewRows = 20, viewCols = 20, tileSize = 50, updateTile }: MapProps): JSX.Element {
+export function Map({ viewRows = 20, viewCols = 20, tileSize = 50, rotateX = 60, rotateZ = 45, updateTile }: MapProps): JSX.Element {
     const [viewport, setViewport] = useState({ startX: 0, startY: 0 });
     const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
     const [tiles, setTiles] = useState<{ [key: string]: Tile }>({}); // 連想配列として初期化
@@ -42,14 +43,6 @@ export function Map({ viewRows = 20, viewCols = 20, tileSize = 50, updateTile }:
                     if (!updatedTiles[`${x},${y}`]) {
                         updatedTiles[`${x},${y}`] = {};
                     }
-                    updatedTiles[`${x},${y}`] = {
-                        children: (
-                            <div>
-                                {x}, {y}
-                            </div>
-                        ),
-                        backgroundColor: updatedTiles[`${x},${y}`].backgroundColor, // 現在の背景色を保持
-                    };
                 }
             }
             return updatedTiles;
@@ -151,48 +144,42 @@ export function Map({ viewRows = 20, viewCols = 20, tileSize = 50, updateTile }:
     }, []);
 
     return (
-        <div>
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: `repeat(${viewCols}, ${tileSize}px)`,
-                    transform: "rotateX(60deg) rotateZ(45deg)",
-                }}
-            >
-                {Array.from({ length: viewRows }).map((_, rowIndex) =>
-                    Array.from({ length: viewCols }).map((_, colIndex) => {
-                        const x = viewport.startX + rowIndex;
-                        const y = viewport.startY + colIndex;
-                        const tile = tiles[`${x},${y}`]; // 連想配列からタイルを取得
-                        const isCurrentPosition = x === currentPosition.x && y === currentPosition.y;
+        <div
+            style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(${viewCols}, ${tileSize}px)`,
+                transform: `rotateX(${rotateX}deg) rotateZ(${rotateZ}deg)`,
+            }}
+        >
+            {Array.from({ length: viewRows }).map((_, rowIndex) =>
+                Array.from({ length: viewCols }).map((_, colIndex) => {
+                    const x = viewport.startX + rowIndex;
+                    const y = viewport.startY + colIndex;
+                    const tile = tiles[`${x},${y}`]; // 連想配列からタイルを取得
+                    const isCurrentPosition = x === currentPosition.x && y === currentPosition.y;
 
-                        return (
-                            <div
-                                key={`${x}-${y}`}
-                                onClick={() => {
-                                    setCurrentPosition({ x, y });
-                                    _updateTile(x, y);
-                                }}
-                                style={{
-                                    width: `${tileSize}px`,
-                                    height: `${tileSize}px`,
-                                    backgroundColor: tile?.backgroundColor || "white",
-                                    border: isCurrentPosition ? "1px solid red" : "1px solid black",
-                                    transform: isCurrentPosition ? "translateY(-3px) translateX(-5px)" : "none",
-                                    boxShadow: isCurrentPosition ? "0px 0px 10px rgba(255, 0, 0, 0.5)" : "0px 2px 5px rgba(0, 0, 0, 0.2)",
-                                    transition: "transform 0.2s, box-shadow 0.2s",
-                                }}
-                            >
-                                {tile?.children}
-                            </div>
-                        );
-                    })
-                )}
-            </div>
-
-            <div style={{ marginTop: "10px" }}>
-                Current Position: {currentPosition.x}, {currentPosition.y}
-            </div>
+                    return (
+                        <div
+                            key={`${x}-${y}`}
+                            onClick={() => {
+                                setCurrentPosition({ x, y });
+                                _updateTile(x, y);
+                            }}
+                            style={{
+                                width: `${tileSize}px`,
+                                height: `${tileSize}px`,
+                                backgroundColor: tile?.backgroundColor || "white",
+                                border: isCurrentPosition ? "1px solid red" : "1px solid black",
+                                transform: isCurrentPosition ? "translateY(-3px) translateX(-5px)" : "none",
+                                boxShadow: isCurrentPosition ? "0px 0px 10px rgba(255, 0, 0, 0.5)" : "0px 2px 5px rgba(0, 0, 0, 0.2)",
+                                transition: "transform 0.2s, box-shadow 0.2s",
+                            }}
+                        >
+                            {tile?.children}
+                        </div>
+                    );
+                })
+            )}
         </div>
     );
 }
