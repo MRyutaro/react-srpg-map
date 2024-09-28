@@ -151,6 +151,7 @@ export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX 
                                     transform: isCurrentPosition ? "translateY(-3px) translateX(-5px)" : "none",
                                     boxShadow: isCurrentPosition ? "0px 0px 10px rgba(255, 0, 0, 0.5)" : "0px 2px 5px rgba(0, 0, 0, 0.2)",
                                     transition: "transform 0.2s, box-shadow 0.2s",
+                                    position: "relative",
                                 }}
                             >
                                 {tile?.children}
