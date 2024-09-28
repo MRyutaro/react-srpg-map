@@ -15,7 +15,7 @@ interface MapProps {
 const INITIAL_X_LENGTH = 100;
 const INITIAL_Y_LENGTH = 100;
 
-export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): JSX.Element {
+export function Map({ viewRows = 20, viewCols = 20, tileSize = 50 }: MapProps): JSX.Element {
     const [viewport, setViewport] = useState({ startX: 0, startY: 0 });
     const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
     const [tiles, setTiles] = useState<{ [key: string]: Tile }>({}); // 連想配列として初期化
