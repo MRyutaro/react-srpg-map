@@ -10,12 +10,13 @@ interface MapProps {
     viewRows?: number;
     viewCols?: number;
     tileSize?: number;
+    updateTile?: (x: number, y: number) => void;
 }
 
 const INITIAL_X_LENGTH = 100;
 const INITIAL_Y_LENGTH = 100;
 
-export function Map({ viewRows = 20, viewCols = 20, tileSize = 50 }: MapProps): JSX.Element {
+export function Map({ viewRows = 20, viewCols = 20, tileSize = 50, updateTile }: MapProps): JSX.Element {
     const [viewport, setViewport] = useState({ startX: 0, startY: 0 });
     const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
     const [tiles, setTiles] = useState<{ [key: string]: Tile }>({}); // 連想配列として初期化
@@ -55,12 +56,16 @@ export function Map({ viewRows = 20, viewCols = 20, tileSize = 50 }: MapProps): 
         });
     }, [viewport.startX, viewport.startY]);
 
-    const updateTile = (x: number, y: number) => {
-        // console.log(`update at ${x}, ${y}`);
-        setTiles((prev) => ({
-            ...prev,
-            [`${x},${y}`]: { ...prev[`${x},${y}`], backgroundColor: "red" }, // 赤に更新
-        }));
+    const _updateTile = (x: number, y: number) => {
+        if (updateTile) {
+            updateTile(x, y);
+        } else {
+            // デフォルトの更新ロジック
+            setTiles((prev) => ({
+                ...prev,
+                [`${x},${y}`]: { ...prev[`${x},${y}`], backgroundColor: "red" }, // 赤に更新
+            }));
+        }
     };
 
     const adjustViewport = (x: number, y: number) => {
@@ -166,7 +171,7 @@ export function Map({ viewRows = 20, viewCols = 20, tileSize = 50 }: MapProps): 
                                 key={`${x}-${y}`}
                                 onClick={() => {
                                     setCurrentPosition({ x, y });
-                                    updateTile(x, y);
+                                    _updateTile(x, y);
                                 }}
                                 style={{
                                     width: `${tileSize}px`,

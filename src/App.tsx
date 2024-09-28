@@ -10,7 +10,7 @@ export default function App() {
                     alignItems: "center",
                 }}
             >
-                <Map /> {/* ここで tileSize を指定 */}
+                <Map />
             </div>
         </div>
     );
