@@ -116,7 +116,8 @@ export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): 
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: `repeat(${viewCols}, ${tileSize}px)`,
+                    gridTemplateColumns: `repeat(${viewCols}, ${tileSize}px)`,  // tileSize幅のタイルをviewCols個並べる
+                    transform: "rotateX(60deg) rotateZ(45deg)", // パースペクティブ効果を追加
                 }}
             >
                 {Array.from({ length: viewRows }).map((_, rowIndex) =>
@@ -135,7 +136,7 @@ export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): 
                                     height: `${tileSize}px`,
                                     backgroundColor: tile.type,
                                     border: isCurrentPosition ? "1px solid red" : "1px solid black", // 現在位置を赤枠で表示
-                                    transform: isCurrentPosition ? 'rotateX(60deg) rotateZ(45deg) translateY(-5px)' : 'rotateX(60deg) rotateZ(45deg)', // 現在位置のタイルを持ち上げる
+                                    transform: isCurrentPosition ? 'translateY(-5px)' : 'none', // 現在位置のタイルを持ち上げる
                                     boxShadow: isCurrentPosition ? '0px 0px 10px rgba(255, 0, 0, 0.5)' : '0px 2px 5px rgba(0, 0, 0, 0.2)', // 影を追加
                                     transition: 'transform 0.2s, box-shadow 0.2s', // スムーズなアニメーションを追加
                                 }}
