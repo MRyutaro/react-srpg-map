@@ -121,51 +121,6 @@ export function Map({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60
         return () => window.removeEventListener("wheel", handleScroll);
     }, []);
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            const isCtrlPressed = e.ctrlKey;
-
-            if (isCtrlPressed) {
-                switch (e.key) {
-                    case "ArrowUp":
-                        moveViewport(-1, 0);
-                        break;
-                    case "ArrowDown":
-                        moveViewport(1, 0);
-                        break;
-                    case "ArrowLeft":
-                        moveViewport(0, -1);
-                        break;
-                    case "ArrowRight":
-                        moveViewport(0, 1);
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                switch (e.key) {
-                    case "ArrowUp":
-                        moveCurrentPosition(-1, 0);
-                        break;
-                    case "ArrowDown":
-                        moveCurrentPosition(1, 0);
-                        break;
-                    case "ArrowLeft":
-                        moveCurrentPosition(0, -1);
-                        break;
-                    case "ArrowRight":
-                        moveCurrentPosition(0, 1);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
-
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, []);
-
     return (
         <div
             style={{
