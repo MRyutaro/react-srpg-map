@@ -1,6 +1,6 @@
 {
   "name": "react-srpg-map",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "ReactでSRPG風のマップを作成するためのライブラリです。",
   "license": "MIT",
   "homepage": "https://github.com/MRyutaro/react-srpg-map",
