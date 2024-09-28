@@ -11,11 +11,11 @@ const defaultTiles: { [key: string]: Tile } = {
 export default function App() {
     const [tiles, setTiles] = useState<{ [key: string]: Tile }>({});
 
-    const updateTile = (x: number, y: number) => {
+    const onClick = (x: number, y: number) => {
         // タイルの更新処理
         setTiles((prev) => ({
             ...prev,
-            [`${x},${y}`]: { ...prev[`${x},${y}`], backgroundColor: "red" },
+            [`${x},${y}`]: { ...prev[`${x},${y}`], backgroundColor: "red", children: <div>{`${x},${y}`}</div> },
         }));
     };
 
@@ -26,7 +26,7 @@ export default function App() {
                 width: "100vw",
             }}
         >
-            <SrpgMap defaultTiles={defaultTiles} updateTile={updateTile} tiles={tiles} setTiles={setTiles} />
+            <SrpgMap defaultTiles={defaultTiles} onClick={onClick} tiles={tiles} setTiles={setTiles} />
         </div>
     );
 }

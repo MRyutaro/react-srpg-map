@@ -12,12 +12,12 @@ export interface MapProps {
     rotateX?: number;
     rotateZ?: number;
     defaultTiles?: { [key: string]: Tile };
-    updateTile?: (x: number, y: number) => void;
+    onClick?: (x: number, y: number) => void;
     tiles?: { [key: string]: Tile };
     setTiles?: React.Dispatch<React.SetStateAction<{ [key: string]: Tile }>>;
 }
 
-export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60, rotateZ = 45, defaultTiles, updateTile, tiles, setTiles }: MapProps) {
+export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60, rotateZ = 45, defaultTiles, onClick, tiles, setTiles }: MapProps) {
     const [viewport, setViewport] = useState({ startX: 0, startY: 0 });
     const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
     const [localTiles, setLocalTiles] = useState<{ [key: string]: Tile }>({});
@@ -63,36 +63,15 @@ export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX 
         });
     }, [viewport.startX, viewport.startY]);
 
-    const _updateTile = (x: number, y: number) => {
-        if (updateTile) {
-            updateTile(x, y);
+    const _onClick = (x: number, y: number) => {
+        if (onClick) {
+            onClick(x, y);
         } else {
             _setTiles((prev) => ({
                 ...prev,
                 [`${x},${y}`]: { ...prev[`${x},${y}`], backgroundColor: "red" },
             }));
         }
-    };
-
-    const adjustViewport = (x: number, y: number) => {
-        setViewport((prev) => {
-            let newStartX = prev.startX;
-            let newStartY = prev.startY;
-
-            if (x < prev.startX) {
-                newStartX = x;
-            } else if (x >= prev.startX + viewRows) {
-                newStartX = x - viewRows + 1;
-            }
-
-            if (y < prev.startY) {
-                newStartY = y;
-            } else if (y >= prev.startY + viewCols) {
-                newStartY = y - viewCols + 1;
-            }
-
-            return { startX: newStartX, startY: newStartY };
-        });
     };
 
     const moveViewport = (dx: number, dy: number) => {
@@ -162,7 +141,7 @@ export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX 
                                 key={`${x}-${y}`}
                                 onClick={() => {
                                     setCurrentPosition({ x, y });
-                                    _updateTile(x, y);
+                                    _onClick(x, y);
                                 }}
                                 style={{
                                     width: `${tileSize}px`,
