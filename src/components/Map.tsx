@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 
 interface Tile {
-    type: string;
-    unit: string | null;
+    backgroundColor: string;
 }
 
 interface MapProps {
@@ -17,8 +16,8 @@ export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): 
 
     // マップのタイルを動的に生成（無限大マップをシミュレート）
     const getTile = (x: number, y: number): Tile => {
-        const tileType = (x + y) % 2 === 0 ? "white" : "gray"; // 白とグレーのチェッカーパターン
-        return { type: tileType, unit: null };
+        const tileBackgroundColor = (x + y) % 2 === 0 ? "white" : "gray"; // 白とグレーのチェッカーパターン
+        return { backgroundColor: tileBackgroundColor };
     };
 
     // ビューポートを更新して、現在位置が範囲外に出ないように調整
@@ -116,7 +115,7 @@ export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): 
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: `repeat(${viewCols}, ${tileSize}px)`,  // tileSize幅のタイルをviewCols個並べる
+                    gridTemplateColumns: `repeat(${viewCols}, ${tileSize}px)`, // tileSize幅のタイルをviewCols個並べる
                     transform: "rotateX(60deg) rotateZ(45deg)", // パースペクティブ効果を追加
                 }}
             >
@@ -134,11 +133,11 @@ export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): 
                                 style={{
                                     width: `${tileSize}px`,
                                     height: `${tileSize}px`,
-                                    backgroundColor: tile.type,
+                                    backgroundColor: tile.backgroundColor,
                                     border: isCurrentPosition ? "1px solid red" : "1px solid black", // 現在位置を赤枠で表示
-                                    transform: isCurrentPosition ? 'translateY(-3px) translateX(-5px)' : 'none', // 現在位置のタイルを持ち上げる
-                                    boxShadow: isCurrentPosition ? '0px 0px 10px rgba(255, 0, 0, 0.5)' : '0px 2px 5px rgba(0, 0, 0, 0.2)', // 影を追加
-                                    transition: 'transform 0.2s, box-shadow 0.2s', // スムーズなアニメーションを追加
+                                    transform: isCurrentPosition ? "translateY(-3px) translateX(-5px)" : "none", // 現在位置のタイルを持ち上げる
+                                    boxShadow: isCurrentPosition ? "0px 0px 10px rgba(255, 0, 0, 0.5)" : "0px 2px 5px rgba(0, 0, 0, 0.2)", // 影を追加
+                                    transition: "transform 0.2s, box-shadow 0.2s", // スムーズなアニメーションを追加
                                 }}
                             />
                         );
