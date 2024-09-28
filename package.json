@@ -1,7 +1,17 @@
 {
   "name": "react-srpg-map",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.2.1",
+  "description": "ReactでSRPG風のマップを作成するためのライブラリです。",
+  "license": "MIT",
+  "homepage": "https://github.com/MRyutaro/react-srpg-map",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MRyutaro/react-srpg-map.git"
+  },
+  "author": {
+    "name": "ryutarom",
+    "email": "m2002r1028@icloud.com"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
