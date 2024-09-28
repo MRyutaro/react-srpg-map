@@ -59,7 +59,7 @@ export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): 
     const moveViewport = (dx: number, dy: number) => {
         setViewport((prev) => ({
             startX: prev.startX + dx,
-            startY: prev.startY + dy
+            startY: prev.startY + dy,
         }));
     };
 
