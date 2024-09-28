@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import logo from "./logo.svg";
 
 interface Tile {
     children?: React.ReactNode;
@@ -11,6 +12,9 @@ interface MapProps {
     tileSize?: number;
 }
 
+const INITIAL_X_LENGTH = 100;
+const INITIAL_Y_LENGTH = 100;
+
 export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): JSX.Element {
     const [viewport, setViewport] = useState({ startX: 0, startY: 0 });
     const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
@@ -19,8 +23,8 @@ export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): 
     // 初期タイルデータを設定
     useEffect(() => {
         const initialTiles: { [key: string]: Tile } = {};
-        for (let x = 0; x < 100; x++) {
-            for (let y = 0; y < 100; y++) {
+        for (let x = 0; x < INITIAL_X_LENGTH; x++) {
+            for (let y = 0; y < INITIAL_Y_LENGTH; y++) {
                 initialTiles[`${x},${y}`] = {}; // x, yをキーにした連想配列
             }
         }
@@ -33,11 +37,16 @@ export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): 
             const updatedTiles = { ...prev };
             for (let x = viewport.startX; x < viewport.startX + viewRows; x++) {
                 for (let y = viewport.startY; y < viewport.startY + viewCols; y++) {
+                    // タイルが存在しない場合は初期化
                     if (!updatedTiles[`${x},${y}`]) {
                         updatedTiles[`${x},${y}`] = {};
                     }
                     updatedTiles[`${x},${y}`] = {
-                        children: <div>{x}, {y}</div>,
+                        children: (
+                            <div>
+                                {x}, {y}
+                            </div>
+                        ),
                         backgroundColor: updatedTiles[`${x},${y}`].backgroundColor, // 現在の背景色を保持
                     };
                 }
