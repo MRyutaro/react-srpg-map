@@ -14,32 +14,44 @@ interface MapProps {
 export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): JSX.Element {
     const [viewport, setViewport] = useState({ startX: 0, startY: 0 });
     const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
-    const [tiles, setTiles] = useState<Tile[][]>(Array.from({ length: 100 }, () => Array.from({ length: 100 }, () => ({})))); // 大きなタイルデータの初期化
+    const [tiles, setTiles] = useState<{ [key: string]: Tile }>({}); // 連想配列として初期化
+
+    // 初期タイルデータを設定
+    useEffect(() => {
+        const initialTiles: { [key: string]: Tile } = {};
+        for (let x = 0; x < 100; x++) {
+            for (let y = 0; y < 100; y++) {
+                initialTiles[`${x},${y}`] = {}; // x, yをキーにした連想配列
+            }
+        }
+        setTiles(initialTiles);
+    }, []);
 
     useEffect(() => {
         // ビューポートが変更されてもタイルの背景色は保持される
-        setTiles((prev) =>
-            prev.map((row, x) =>
-                row.map((tile, y) => ({
-                    children: <div>{x}, {y}</div>,
-                    backgroundColor: tile.backgroundColor // 現在の背景色を保持
-                }))
-            )
-        );
+        setTiles((prev) => {
+            const updatedTiles = { ...prev };
+            for (let x = viewport.startX; x < viewport.startX + viewRows; x++) {
+                for (let y = viewport.startY; y < viewport.startY + viewCols; y++) {
+                    if (!updatedTiles[`${x},${y}`]) {
+                        updatedTiles[`${x},${y}`] = {};
+                    }
+                    updatedTiles[`${x},${y}`] = {
+                        children: <div>{x}, {y}</div>,
+                        backgroundColor: updatedTiles[`${x},${y}`].backgroundColor, // 現在の背景色を保持
+                    };
+                }
+            }
+            return updatedTiles;
+        });
     }, [viewport.startX, viewport.startY]);
 
     const updateTile = (x: number, y: number) => {
-        console.log(`update at ${x}, ${y}`);
-        setTiles((prev) =>
-            prev.map((row, rowIndex) =>
-                row.map((tile, colIndex) => {
-                    if (rowIndex === x && colIndex === y) {
-                        return { ...tile, backgroundColor: "red" }; // 赤に更新
-                    }
-                    return tile;
-                })
-            )
-        );
+        // console.log(`update at ${x}, ${y}`);
+        setTiles((prev) => ({
+            ...prev,
+            [`${x},${y}`]: { ...prev[`${x},${y}`], backgroundColor: "red" }, // 赤に更新
+        }));
     };
 
     const adjustViewport = (x: number, y: number) => {
@@ -137,7 +149,7 @@ export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): 
                     Array.from({ length: viewCols }).map((_, colIndex) => {
                         const x = viewport.startX + rowIndex;
                         const y = viewport.startY + colIndex;
-                        const tile = tiles[x][y]; // tilesデータからタイルを取得
+                        const tile = tiles[`${x},${y}`]; // 連想配列からタイルを取得
                         const isCurrentPosition = x === currentPosition.x && y === currentPosition.y;
 
                         return (
@@ -150,14 +162,14 @@ export function Map({ viewRows = 10, viewCols = 10, tileSize = 50 }: MapProps): 
                                 style={{
                                     width: `${tileSize}px`,
                                     height: `${tileSize}px`,
-                                    backgroundColor: tile.backgroundColor || "white",
+                                    backgroundColor: tile?.backgroundColor || "white",
                                     border: isCurrentPosition ? "1px solid red" : "1px solid black",
                                     transform: isCurrentPosition ? "translateY(-3px) translateX(-5px)" : "none",
                                     boxShadow: isCurrentPosition ? "0px 0px 10px rgba(255, 0, 0, 0.5)" : "0px 2px 5px rgba(0, 0, 0, 0.2)",
                                     transition: "transform 0.2s, box-shadow 0.2s",
                                 }}
                             >
-                                {tile.children}
+                                {tile?.children}
                             </div>
                         );
                     })
