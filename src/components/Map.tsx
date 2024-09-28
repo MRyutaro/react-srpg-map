@@ -14,32 +14,26 @@ interface MapProps {
     updateTile?: (x: number, y: number) => void;
 }
 
-const INITIAL_X_LENGTH = 20;
-const INITIAL_Y_LENGTH = 20;
-
 export function Map({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60, rotateZ = 45, updateTile }: MapProps): JSX.Element {
     const [viewport, setViewport] = useState({ startX: 0, startY: 0 });
     const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
-    const [tiles, setTiles] = useState<{ [key: string]: Tile }>({}); // 連想配列として初期化
+    const [tiles, setTiles] = useState<{ [key: string]: Tile }>({});
 
-    // 初期タイルデータを設定
     useEffect(() => {
         const initialTiles: { [key: string]: Tile } = {};
-        for (let x = 0; x < INITIAL_X_LENGTH; x++) {
-            for (let y = 0; y < INITIAL_Y_LENGTH; y++) {
-                initialTiles[`${x},${y}`] = {}; // x, yをキーにした連想配列
+        for (let x = 0; x < viewRows; x++) {
+            for (let y = 0; y < viewCols; y++) {
+                initialTiles[`${x},${y}`] = {};
             }
         }
         setTiles(initialTiles);
     }, []);
 
     useEffect(() => {
-        // ビューポートが変更されてもタイルの背景色は保持される
         setTiles((prev) => {
             const updatedTiles = { ...prev };
             for (let x = viewport.startX; x < viewport.startX + viewRows; x++) {
                 for (let y = viewport.startY; y < viewport.startY + viewCols; y++) {
-                    // タイルが存在しない場合は初期化
                     if (!updatedTiles[`${x},${y}`]) {
                         updatedTiles[`${x},${y}`] = {};
                     }
@@ -53,10 +47,9 @@ export function Map({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60
         if (updateTile) {
             updateTile(x, y);
         } else {
-            // デフォルトの更新ロジック
             setTiles((prev) => ({
                 ...prev,
-                [`${x},${y}`]: { ...prev[`${x},${y}`], backgroundColor: "red" }, // 赤に更新
+                [`${x},${y}`]: { ...prev[`${x},${y}`], backgroundColor: "red" },
             }));
         }
     };
@@ -97,6 +90,36 @@ export function Map({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60
             startY: prev.startY + dy,
         }));
     };
+
+    const handleScroll = (e: WheelEvent) => {
+        const isShiftPressed = e.shiftKey;
+        const scrollDirection = e.deltaY > 0 ? "down" : "up";
+
+        if (isShiftPressed) {
+            // Shift + スクロール
+            if (scrollDirection === "down") {
+                // カメラが右へ移動するので、見えている物体は左に移動する
+                moveViewport(-1, 1);
+            } else if (scrollDirection === "up") {
+                // カメラが左へ移動するので、見えている物体は右に移動する
+                moveViewport(1, -1);
+            }
+        } else {
+            // 通常のスクロール
+            if (scrollDirection === "down") {
+                // カメラが下へ移動するので、見えている物体は上に移動する
+                moveViewport(1, 1);
+            } else if (scrollDirection === "up") {
+                // カメラが上へ移動するので、見えている物体は下に移動する
+                moveViewport(-1, -1);
+            }
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener("wheel", handleScroll);
+        return () => window.removeEventListener("wheel", handleScroll);
+    }, []);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -165,7 +188,7 @@ export function Map({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60
                     Array.from({ length: viewCols }).map((_, colIndex) => {
                         const x = viewport.startX + rowIndex;
                         const y = viewport.startY + colIndex;
-                        const tile = tiles[`${x},${y}`]; // 連想配列からタイルを取得
+                        const tile = tiles[`${x},${y}`];
                         const isCurrentPosition = x === currentPosition.x && y === currentPosition.y;
 
                         return (
