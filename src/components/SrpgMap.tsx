@@ -14,7 +14,7 @@ interface MapProps {
     updateTile?: (x: number, y: number) => void;
 }
 
-export function Map({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60, rotateZ = 45, updateTile }: MapProps): JSX.Element {
+export function SrpgMap({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60, rotateZ = 45, updateTile }: MapProps): JSX.Element {
     const [viewport, setViewport] = useState({ startX: 0, startY: 0 });
     const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
     const [tiles, setTiles] = useState<{ [key: string]: Tile }>({});

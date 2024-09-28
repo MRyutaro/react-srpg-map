@@ -1,4 +1,4 @@
-import { Map } from "./components/Map";
+import { SrpgMap } from "./components/SrpgMap";
 
 export default function App() {
     return (
@@ -8,7 +8,7 @@ export default function App() {
                 width: "100vw",
             }}
         >
-            <Map />
+            <SrpgMap />
         </div>
     );
 }
