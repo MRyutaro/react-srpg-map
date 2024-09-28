@@ -2,16 +2,13 @@ import { Map } from "./components/Map";
 
 export default function App() {
     return (
-        <div style={{ textAlign: "center" }}>
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}
-            >
-                <Map />
-            </div>
+        <div
+            style={{
+                height: "100vh",
+                width: "100vw",
+            }}
+        >
+            <Map />
         </div>
     );
 }

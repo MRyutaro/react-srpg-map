@@ -17,7 +17,7 @@ interface MapProps {
 const INITIAL_X_LENGTH = 20;
 const INITIAL_Y_LENGTH = 20;
 
-export function Map({ viewRows = 20, viewCols = 20, tileSize = 50, rotateX = 60, rotateZ = 45, updateTile }: MapProps): JSX.Element {
+export function Map({ viewRows = 30, viewCols = 30, tileSize = 100, rotateX = 60, rotateZ = 45, updateTile }: MapProps): JSX.Element {
     const [viewport, setViewport] = useState({ startX: 0, startY: 0 });
     const [currentPosition, setCurrentPosition] = useState({ x: 0, y: 0 });
     const [tiles, setTiles] = useState<{ [key: string]: Tile }>({}); // 連想配列として初期化
@@ -146,40 +146,51 @@ export function Map({ viewRows = 20, viewCols = 20, tileSize = 50, rotateX = 60,
     return (
         <div
             style={{
-                display: "grid",
-                gridTemplateColumns: `repeat(${viewCols}, ${tileSize}px)`,
-                transform: `rotateX(${rotateX}deg) rotateZ(${rotateZ}deg)`,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                width: "100%",
+                overflow: "hidden",
             }}
         >
-            {Array.from({ length: viewRows }).map((_, rowIndex) =>
-                Array.from({ length: viewCols }).map((_, colIndex) => {
-                    const x = viewport.startX + rowIndex;
-                    const y = viewport.startY + colIndex;
-                    const tile = tiles[`${x},${y}`]; // 連想配列からタイルを取得
-                    const isCurrentPosition = x === currentPosition.x && y === currentPosition.y;
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${viewCols}, ${tileSize}px)`,
+                    transform: `rotateX(${rotateX}deg) rotateZ(${rotateZ}deg)`,
+                }}
+            >
+                {Array.from({ length: viewRows }).map((_, rowIndex) =>
+                    Array.from({ length: viewCols }).map((_, colIndex) => {
+                        const x = viewport.startX + rowIndex;
+                        const y = viewport.startY + colIndex;
+                        const tile = tiles[`${x},${y}`]; // 連想配列からタイルを取得
+                        const isCurrentPosition = x === currentPosition.x && y === currentPosition.y;
 
-                    return (
-                        <div
-                            key={`${x}-${y}`}
-                            onClick={() => {
-                                setCurrentPosition({ x, y });
-                                _updateTile(x, y);
-                            }}
-                            style={{
-                                width: `${tileSize}px`,
-                                height: `${tileSize}px`,
-                                backgroundColor: tile?.backgroundColor || "white",
-                                border: isCurrentPosition ? "1px solid red" : "1px solid black",
-                                transform: isCurrentPosition ? "translateY(-3px) translateX(-5px)" : "none",
-                                boxShadow: isCurrentPosition ? "0px 0px 10px rgba(255, 0, 0, 0.5)" : "0px 2px 5px rgba(0, 0, 0, 0.2)",
-                                transition: "transform 0.2s, box-shadow 0.2s",
-                            }}
-                        >
-                            {tile?.children}
-                        </div>
-                    );
-                })
-            )}
+                        return (
+                            <div
+                                key={`${x}-${y}`}
+                                onClick={() => {
+                                    setCurrentPosition({ x, y });
+                                    _updateTile(x, y);
+                                }}
+                                style={{
+                                    width: `${tileSize}px`,
+                                    height: `${tileSize}px`,
+                                    backgroundColor: tile?.backgroundColor || "white",
+                                    border: isCurrentPosition ? "1px solid red" : "1px solid black",
+                                    transform: isCurrentPosition ? "translateY(-3px) translateX(-5px)" : "none",
+                                    boxShadow: isCurrentPosition ? "0px 0px 10px rgba(255, 0, 0, 0.5)" : "0px 2px 5px rgba(0, 0, 0, 0.2)",
+                                    transition: "transform 0.2s, box-shadow 0.2s",
+                                }}
+                            >
+                                {tile?.children}
+                            </div>
+                        );
+                    })
+                )}
+            </div>
         </div>
     );
 }
