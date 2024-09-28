@@ -1,4 +1,5 @@
 import { Map } from "./components/Map";
+import { Perspective } from "./components/Perspective";
 
 export default function App() {
     return (
